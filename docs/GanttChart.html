@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server and Database Commands - Project Gantt Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #0066cc;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+        .gantt-chart {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .gantt-chart th, .gantt-chart td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .gantt-chart th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+        }
+        .gantt-header {
+            background-color: #0066cc;
+            color: white;
+            text-align: center;
+        }
+        .task-name {
+            width: 250px;
+            font-weight: bold;
+        }
+        .day-cell {
+            width: 30px;
+            text-align: center;
+        }
+        .sprint1 {
+            background-color: #a8d08d;
+        }
+        .sprint2 {
+            background-color: #c6e0b4;
+        }
+        .sprint3 {
+            background-color: #f8cbad;
+        }
+        .final {
+            background-color: #bdd7ee;
+        }
+        .milestone {
+            background-color: #ffeb9c;
+            text-align: center;
+            font-weight: bold;
+        }
+        .legend {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 10px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .project-info {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Server and Database Commands - Project Gantt Chart</h1>
+        
+        <div class="project-info">
+            <p><strong>Project:</strong> Automating Researcher Information Integration with Google Scholar API</p>
+            <p><strong>Period:</strong> September 29 - October 6, 2025</p>
+            <p><strong>Current Sprint:</strong> Sprint 2: API Development (October 1-2, 2025)</p>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #a8d08d;"></div>
+                <span>Sprint 1: API Research</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #c6e0b4;"></div>
+                <span>Sprint 2: Java Development</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f8cbad;"></div>
+                <span>Sprint 3: Database Integration</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #bdd7ee;"></div>
+                <span>Final Delivery</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ffeb9c;"></div>
+                <span>Milestone</span>
+            </div>
+        </div>
+        
+        <table class="gantt-chart">
+            <thead>
+                <tr>
+                    <th class="gantt-header" rowspan="2">Task / Activity</th>
+                    <th class="gantt-header" colspan="2">Sprint 1</th>
+                    <th class="gantt-header" colspan="2">Sprint 2</th>
+                    <th class="gantt-header" colspan="3">Sprint 3</th>
+                    <th class="gantt-header" colspan="1">Final</th>
+                </tr>
+                <tr>
+                    <th class="day-cell">Sep 29</th>
+                    <th class="day-cell">Sep 30</th>
+                    <th class="day-cell">Oct 1</th>
+                    <th class="day-cell">Oct 2</th>
+                    <th class="day-cell">Oct 3</th>
+                    <th class="day-cell">Oct 4</th>
+                    <th class="day-cell">Oct 5</th>
+                    <th class="day-cell">Oct 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sprint 1 Tasks -->
+                <tr>
+                    <td class="task-name">Document Google Scholar API</td>
+                    <td class="sprint1">✓</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Identify API constraints</td>
+                    <td class="sprint1">✓</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Create data mapping</td>
+                    <td></td>
+                    <td class="sprint1">✓</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Define database schema</td>
+                    <td></td>
+                    <td class="sprint1">✓</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Setup GitHub repository</td>
+                    <td class="sprint1">✓</td>
+                    <td class="sprint1">✓</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="milestone">Sprint 1 Review</td>
+                    <td></td>
+                    <td class="milestone">✓</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+                <!-- Sprint 2 Tasks -->
+                <tr>
+                    <td class="task-name">Implement Java MVC structure</td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint2">→</td>
+                    <td class="sprint2"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Create GET request functionality</td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint2">→</td>
+                    <td class="sprint2"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Develop data models</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint2">→</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Implement JSON parsing</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint2">→</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Implement error handling</td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint2"></td>
+                    <td class="sprint2">→</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="milestone">Sprint 2 Review</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="milestone">→</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+                <!-- Sprint 3 Tasks -->
+                <tr>
+                    <td class="task-name">Create database operations</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint3">→</td>
+                    <td class="sprint3"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Implement pagination handling</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint3">→</td>
+                    <td class="sprint3"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Develop validation rules</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint3">→</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Create test suite</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint3">→</td>
+                    <td class="sprint3"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="task-name">Integration testing</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="sprint3">→</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="milestone">Sprint 3 Review</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="milestone">→</td>
+                    <td></td>
+                </tr>
+                
+                <!-- Final Delivery -->
+                <tr>
+                    <td class="task-name">Final Integration & Documentation</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="final">→</td>
+                </tr>
+                <tr>
+                    <td class="task-name">Project Presentation</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="final">→</td>
+                </tr>
+                <tr>
+                    <td class="milestone">Project Completion</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="milestone">→</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <p><strong>Legend:</strong></p>
+            <p>✓ = Completed task</p>
+            <p>→ = In progress task</p>
+        </div>
+    </div>
+</body>
+</html>
