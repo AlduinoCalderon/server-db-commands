@@ -1,7 +1,7 @@
 package com.innovationcenter.scholarapi.service;
 
 /**
- * Interface for configuration management following Single Responsibility Principle.
+ * Interface for configuration management.
  * Defines contract for environment and configuration operations.
  */
 public interface ConfigurationService {

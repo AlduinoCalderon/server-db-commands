@@ -4,7 +4,7 @@ import com.innovationcenter.scholarapi.model.Author;
 import org.json.JSONObject;
 
 /**
- * Interface for parsing JSON responses following Single Responsibility Principle.
+ * Interface for parsing JSON responses.
  * Defines contract for data transformation operations.
  */
 public interface JsonParser {

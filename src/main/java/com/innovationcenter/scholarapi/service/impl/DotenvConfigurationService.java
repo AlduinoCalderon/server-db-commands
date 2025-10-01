@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of ConfigurationService following SOLID principles.
+ * Implementation of ConfigurationService for environment configuration.
  * Handles environment configuration and API key management.
  */
 public class DotenvConfigurationService implements ConfigurationService {

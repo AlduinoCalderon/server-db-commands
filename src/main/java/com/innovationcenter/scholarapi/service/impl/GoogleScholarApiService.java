@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of ApiService for Google Scholar using SOLID principles.
- * Follows Dependency Inversion Principle by depending on abstractions.
+ * Implementation of ApiService for Google Scholar API integration.
+ * Uses dependency injection for configuration and parsing services.
  */
 public class GoogleScholarApiService implements ApiService {
     
@@ -36,7 +36,7 @@ public class GoogleScholarApiService implements ApiService {
     private final CloseableHttpClient httpClient;
     
     /**
-     * Constructor with dependency injection following Dependency Inversion Principle.
+     * Constructor with dependency injection.
      */
     public GoogleScholarApiService(ConfigurationService configurationService, JsonParser jsonParser) {
         this.configurationService = configurationService;

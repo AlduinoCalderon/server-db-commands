@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of JsonParser following SOLID principles.
+ * Implementation of JsonParser for Google Scholar responses.
  * Handles parsing of Google Scholar JSON responses.
  */
 public class GoogleScholarJsonParser implements JsonParser {

@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Author Search Controller following SOLID principles.
- * Uses Dependency Inversion Principle by depending on abstractions.
+ * Author Search Controller for coordinating search operations.
+ * Uses dependency injection for clean architecture.
  */
 public class AuthorSearchController {
     
@@ -19,7 +19,7 @@ public class AuthorSearchController {
     private final ApiService apiService;
     
     /**
-     * Constructor with dependency injection following Dependency Inversion Principle.
+     * Constructor with dependency injection.
      */
     public AuthorSearchController(ApiService apiService) {
         this.apiService = apiService;
@@ -27,7 +27,7 @@ public class AuthorSearchController {
     
     /**
      * Search for authors by name.
-     * Single Responsibility: Only coordinates API calls and error handling.
+     * Coordinates API calls and handles error scenarios.
      * 
      * @param query Search query
      * @return List of author search results

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Adapter to make existing ConsoleView compatible with new UserInterface.
- * Follows Adapter Pattern and Open/Closed Principle.
+ * Adapter to make existing ConsoleView compatible with UserInterface.
+ * Implements the Adapter Pattern for interface compatibility.
  */
 public class ConsoleViewAdapter implements UserInterface {
     

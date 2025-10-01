@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Interface for view operations following Interface Segregation Principle.
- * Defines contract for user interface operations.
+ * Interface for user interface operations.
+ * Defines contract for user interaction and display.
  */
 public interface UserInterface {
     

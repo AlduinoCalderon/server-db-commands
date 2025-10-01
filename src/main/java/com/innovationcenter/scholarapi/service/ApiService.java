@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Interface for API service operations following Single Responsibility Principle.
+ * Interface for API service operations.
  * Defines contract for external API communication.
  */
 public interface ApiService {
