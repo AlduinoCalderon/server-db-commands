@@ -31,6 +31,28 @@ Eliminate manual data entry processes and create an automated pipeline that:
 - Integrates seamlessly with existing database infrastructure
 - Maintains accurate, up-to-date researcher profiles
 
+## 🚀 Quick Start - Run the Application
+
+### Test Automatic Database Saving
+```powershell
+# Simple demo (recommended)
+mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.SimpleAutoSaveDemo
+
+# Full database test with API integration
+mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.DatabaseTestRunner
+```
+
+### Prerequisites
+1. **Configure Database:** Create `.env` file with your MySQL settings
+2. **Install Dependencies:** Run `mvn clean compile`
+3. **Database Setup:** The app will auto-create tables on first run
+
+### What It Does
+✅ **Automatically saves** articles to database  
+✅ **Automatically retrieves** saved articles  
+✅ **Tests** complete MVC architecture  
+✅ **Demonstrates** search and persistence workflow
+
 ## ⚙️ Key Functionalities
 
 ### 1. Automated Data Retrieval
