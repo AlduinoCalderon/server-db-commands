@@ -331,5 +331,5 @@ This project is developed for academic purposes at the Innovation Center.
 ---
 
 <p align="center">
-  Made with ☕ by the Alduino Calderon
+  Made with ☕ by Alduino Calderon
 </p>
