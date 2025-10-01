@@ -3,6 +3,7 @@ package com.innovationcenter.scholarapi.controller;
 import com.innovationcenter.scholarapi.model.Author;
 import com.innovationcenter.scholarapi.model.Publication;
 import com.innovationcenter.scholarapi.model.SearchResult;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -27,11 +28,34 @@ import java.util.List;
 public class ScholarApiController {
     private static final Logger logger = LoggerFactory.getLogger(ScholarApiController.class);
     
-    // API Configuration
-    // connect dotenv and use mi .env api key
-
+    // API Configuration - Load from .env file
     private static final String BASE_URL = "https://serpapi.com/search.json";
-    private static final String API_KEY_PLACEHOLDER = System.getenv("SERPAPI_KEY") != null ? System.getenv("SERPAPI_KEY") : "YOUR_SERPAPI_KEY";
+    private static final String API_KEY_PLACEHOLDER;
+    
+    // Static block to load .env file
+    static {
+        Logger initLogger = LoggerFactory.getLogger(ScholarApiController.class);
+        Dotenv dotenv = null;
+        try {
+            dotenv = Dotenv.configure().ignoreIfMissing().load();
+            initLogger.info("Dotenv loaded successfully");
+        } catch (Exception e) {
+            initLogger.warn("Failed to load .env file: {}", e.getMessage());
+        }
+        
+        String apiKey = null;
+        if (dotenv != null) {
+            apiKey = dotenv.get("SERPAPI_KEY");
+            initLogger.info("API key from .env file: {}", apiKey != null ? "***" + apiKey.substring(Math.max(0, apiKey.length() - 4)) : "null");
+        }
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            apiKey = System.getenv("SERPAPI_KEY");
+            initLogger.info("API key from system env: {}", apiKey != null ? "***" + apiKey.substring(Math.max(0, apiKey.length() - 4)) : "null");
+        }
+        
+        API_KEY_PLACEHOLDER = apiKey != null ? apiKey : "YOUR_SERPAPI_KEY";
+        initLogger.info("Final API_KEY_PLACEHOLDER: {}", API_KEY_PLACEHOLDER.equals("YOUR_SERPAPI_KEY") ? "PLACEHOLDER" : "CONFIGURED");
+    }
     private static final int DEFAULT_NUM_RESULTS = 10;
     private static final int REQUEST_TIMEOUT = 10000; // 10 seconds
     
@@ -46,8 +70,10 @@ public class ScholarApiController {
         this.httpClient = HttpClients.createDefault();
         this.apiKey = apiKey != null ? apiKey : API_KEY_PLACEHOLDER;
         
-        if (API_KEY_PLACEHOLDER.equals(this.apiKey)) {
+        if (!isApiKeyConfigured()) {
             logger.warn("Using placeholder API key. Please set a valid SerpAPI key.");
+        } else {
+            logger.info("API key configured successfully from environment.");
         }
     }
 
@@ -125,15 +151,17 @@ public class ScholarApiController {
     }
 
     /**
-     * Build the search URL for author search.
+     * Build the search URL for author search according to technical documentation.
      * @param query The search query
      * @param maxResults Maximum results to return
      * @return The complete URL string
      */
     private String buildSearchUrl(String query, int maxResults) {
         try {
-            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
-            return String.format("%s?engine=google_scholar_profiles&mauthors=%s&api_key=%s&num=%d",
+            // Use author: prefix for author searches as per documentation
+            String searchQuery = "author:\"" + query + "\"";
+            String encodedQuery = URLEncoder.encode(searchQuery, StandardCharsets.UTF_8.toString());
+            return String.format("%s?engine=google_scholar&q=%s&api_key=%s&num=%d",
                     BASE_URL, encodedQuery, apiKey, maxResults);
         } catch (Exception e) {
             logger.error("Error encoding search query: {}", e.getMessage());
@@ -211,13 +239,13 @@ public class ScholarApiController {
                 return searchResult;
             }
 
-            // Parse profiles array
-            if (jsonObject.has("profiles")) {
-                JSONArray profiles = jsonObject.getJSONArray("profiles");
+            // Parse organic_results array (regular Google Scholar search)
+            if (jsonObject.has("organic_results")) {
+                JSONArray results = jsonObject.getJSONArray("organic_results");
                 
-                for (int i = 0; i < profiles.length(); i++) {
-                    JSONObject profile = profiles.getJSONObject(i);
-                    Author author = parseAuthorFromProfile(profile);
+                for (int i = 0; i < results.length(); i++) {
+                    JSONObject result = results.getJSONObject(i);
+                    Author author = parseAuthorFromSearchResult(result);
                     
                     if (author != null && author.hasValidData()) {
                         searchResult.addAuthor(author);
@@ -243,59 +271,154 @@ public class ScholarApiController {
     }
 
     /**
-     * Parse an author object from a profile JSON.
-     * @param profile The JSON object representing an author profile
+     * Parse an author object from a search result JSON according to documentation.
+     * @param result The JSON object representing a search result from organic_results
      * @return Author object, or null if parsing fails
      */
-    private Author parseAuthorFromProfile(JSONObject profile) {
+    private Author parseAuthorFromSearchResult(JSONObject result) {
         try {
             Author author = new Author();
 
-            // Basic information
-            if (profile.has("author_id")) {
-                author.setAuthorId(profile.getString("author_id"));
-            }
-            
-            if (profile.has("name")) {
-                author.setName(profile.getString("name"));
-            }
-            
-            if (profile.has("affiliation")) {
-                author.setAffiliation(profile.getString("affiliation"));
-            }
-            
-            if (profile.has("email")) {
-                author.setEmail(profile.getString("email"));
-            }
-            
-            if (profile.has("interests")) {
-                JSONArray interests = profile.getJSONArray("interests");
-                List<String> interestList = new ArrayList<>();
-                for (int i = 0; i < interests.length(); i++) {
-                    JSONObject interest = interests.getJSONObject(i);
-                    if (interest.has("title")) {
-                        interestList.add(interest.getString("title"));
-                    }
+            // Extract author information from publication_info.summary as per documentation
+            if (result.has("publication_info") && result.getJSONObject("publication_info").has("summary")) {
+                String summary = result.getJSONObject("publication_info").getString("summary");
+                // Parse format: "Author1, Author2 - Source, Year - Publisher"
+                String[] parts = summary.split(" - ");
+                if (parts.length > 0) {
+                    author.setName(parts[0].trim()); // First part is authors
                 }
-                author.setInterests(String.join(", ", interestList));
             }
-
-            if (profile.has("thumbnail")) {
-                author.setThumbnail(profile.getString("thumbnail"));
+            
+            if (result.has("result_id")) {
+                author.setAuthorId(result.getString("result_id"));
             }
-
-            // Citation metrics
-            if (profile.has("cited_by")) {
-                author.setCitedBy(profile.getInt("cited_by"));
+            
+            // Extract citations from inline_links.cited_by.total
+            if (result.has("inline_links") && result.getJSONObject("inline_links").has("cited_by")) {
+                JSONObject citedBy = result.getJSONObject("inline_links").getJSONObject("cited_by");
+                if (citedBy.has("total")) {
+                    author.setCitedBy(citedBy.getInt("total"));
+                }
+            }
+            
+            if (result.has("snippet")) {
+                String snippet = result.getString("snippet");
+                // Try to extract affiliation from snippet
+                String affiliation = extractAffiliationFromSnippet(snippet);
+                if (affiliation != null) {
+                    author.setAffiliation(affiliation);
+                }
+            }
+            
+            // Extract publication info and add to author
+            Publication publication = parsePublicationFromSearchResult(result);
+            if (publication != null) {
+                author.addPublication(publication);
             }
 
             return author;
 
         } catch (Exception e) {
-            logger.error("Error parsing author from profile: {}", e.getMessage());
+            logger.error("Error parsing author from search result: {}", e.getMessage());
             return null;
         }
     }
+    
+
+    
+    /**
+     * Extract affiliation from snippet text.
+     * @param snippet The snippet text
+     * @return Extracted affiliation or null
+     */
+    private String extractAffiliationFromSnippet(String snippet) {
+        if (snippet == null || snippet.isEmpty()) {
+            return null;
+        }
+        
+        // Look for common university/institution keywords
+        String[] keywords = {"University", "Institute", "College", "Research", "Department"};
+        for (String keyword : keywords) {
+            if (snippet.toLowerCase().contains(keyword.toLowerCase())) {
+                // Extract sentence containing the keyword
+                String[] sentences = snippet.split("\\.");
+                for (String sentence : sentences) {
+                    if (sentence.toLowerCase().contains(keyword.toLowerCase())) {
+                        return sentence.trim();
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Parse a publication from a search result JSON object per documentation.
+     * @param result The JSON object representing a search result
+     * @return Publication object, or null if parsing fails
+     */
+    private Publication parsePublicationFromSearchResult(JSONObject result) {
+        try {
+            Publication publication = new Publication();
+
+            if (result.has("title")) {
+                publication.setTitle(result.getString("title"));
+            }
+            
+            if (result.has("link")) {
+                publication.setLink(result.getString("link"));
+            }
+            
+            if (result.has("result_id")) {
+                publication.setPublicationId(result.getString("result_id"));
+            }
+            
+            if (result.has("snippet")) {
+                publication.setSnippet(result.getString("snippet"));
+            }
+            
+            // Parse publication_info.summary as per documentation
+            // Format: "Author1, Author2 - Source, Year - Publisher"
+            if (result.has("publication_info") && result.getJSONObject("publication_info").has("summary")) {
+                String summary = result.getJSONObject("publication_info").getString("summary");
+                String[] parts = summary.split(" - ");
+                
+                if (parts.length >= 2) {
+                    publication.setAuthors(parts[0].trim());
+                    
+                    // Extract year and source from "Source, Year" format
+                    if (parts[1].contains(",")) {
+                        String[] sourceYear = parts[1].split(",");
+                        if (sourceYear.length >= 2) {
+                            publication.setVenue(sourceYear[0].trim());
+                            try {
+                                publication.setYear(Integer.parseInt(sourceYear[1].trim()));
+                            } catch (NumberFormatException e) {
+                                logger.debug("Could not parse year from: {}", sourceYear[1]);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Extract citation count from inline_links.cited_by.total
+            if (result.has("inline_links") && result.getJSONObject("inline_links").has("cited_by")) {
+                JSONObject citedBy = result.getJSONObject("inline_links").getJSONObject("cited_by");
+                if (citedBy.has("total")) {
+                    publication.setCitedBy(citedBy.getInt("total"));
+                }
+            }
+
+            return publication;
+
+        } catch (Exception e) {
+            logger.error("Error parsing publication from search result: {}", e.getMessage());
+            return null;
+        }
+    }
+    
+
 
     /**
      * Parse the JSON response from author details API.
@@ -473,7 +596,8 @@ public class ScholarApiController {
      * @return true if API key appears to be valid
      */
     public boolean isApiKeyConfigured() {
-        return apiKey != null && !apiKey.trim().isEmpty() && !API_KEY_PLACEHOLDER.equals(apiKey);
+        return apiKey != null && !apiKey.trim().isEmpty() && 
+               !"YOUR_SERPAPI_KEY".equals(apiKey) && !apiKey.startsWith("YOUR_");
     }
 
     /**
