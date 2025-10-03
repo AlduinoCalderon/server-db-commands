@@ -89,6 +89,39 @@ public class ScholarArticleController {
     }
     
     /**
+     * Handles search request for articles by title keyword.
+     * Searches the database for articles matching the keyword in their title.
+     */
+    public void searchArticlesByTitle(String keyword) {
+        try {
+            System.out.println("\n" + "=".repeat(80));
+            System.out.println("🔍 Searching articles by title: \"" + keyword + "\"");
+            System.out.println("=".repeat(80));
+            
+            if (keyword == null || keyword.trim().isEmpty()) {
+                articleView.showError("Keyword cannot be empty");
+                return;
+            }
+            
+            // Search in database
+            List<Article> articles = articleService.searchByTitle(keyword);
+            
+            if (articles.isEmpty()) {
+                System.out.println("⚠️ No articles found with title containing: \"" + keyword + "\"");
+            } else {
+                System.out.println("📚 Found " + articles.size() + " article(s):\n");
+                articleView.displayArticles(articles);
+            }
+            
+            System.out.println("=".repeat(80));
+            
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error searching articles by title: " + keyword, e);
+            articleView.showError("Title search failed: " + e.getMessage());
+        }
+    }
+    
+    /**
      * Handles request to process multiple researchers.
      */
     public void processMultipleResearchers(List<String> researchers, int articlesPerResearcher) {
