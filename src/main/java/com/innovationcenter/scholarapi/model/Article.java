@@ -22,6 +22,7 @@ public class Article {
     private String publisher;            
     private LocalDate createdAt;         
     private LocalDate updatedAt;
+    private LocalDate deletedAt;
     
     // Default constructor
     public Article() {}
@@ -129,6 +130,11 @@ public class Article {
     
     public int getCitedBy() { return citationCount; }
     public void setCitedBy(int citedBy) { this.citationCount = citedBy; }
+    
+    public LocalDate getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDate deletedAt) { this.deletedAt = deletedAt; }
+    
+    public boolean isDeleted() { return deletedAt != null; }
     
     // Utility methods
     public boolean isValidForDatabase() {
