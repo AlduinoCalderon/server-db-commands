@@ -16,10 +16,10 @@ To develop an automated system that integrates information from Google Scholar A
 
 | Sprint | Dates | Milestone | Status |
 |--------|-------|-----------|--------|
-| **Sprint 1** | Sep 29-30, 2025 | API Research & Documentation | Completed |
-| **Sprint 2** | Oct 1-2, 2025 | Java Development for API Integration | In Progress |
-| **Sprint 3** | Oct 3-5, 2025 | Database Integration & Testing | Not Started |
-| **Final Delivery** | Oct 6, 2025 | Project Completion & Handover | Not Started |
+| **Sprint 1** | Sep 29-30, 2025 | API Research & Documentation | ✅ Completed |
+| **Sprint 2** | Oct 1-2, 2025 | Java Development for API Integration | ✅ Completed |
+| **Sprint 3** | Oct 3-5, 2025 | Database Integration & Testing | ✅ Completed |
+| **Final Delivery** | Oct 6, 2025 | Project Completion & Handover | 🔄 In Progress |
 
 ![alt text](GanttChart.png)
 
@@ -45,6 +45,13 @@ To develop an automated system that integrates information from Google Scholar A
 - Implementation of pagination handling
 - Error handling and logging
 - Integration testing
+- **JavaFX GUI Development:**
+  - Search tab with API integration
+  - Browse database tab with filtering
+  - Authors database tab with statistics
+  - Statistics tab with metrics
+  - Controller operations (View, Delete, Refresh)
+  - Custom CSS styling
 
 ### Final Delivery
 - Complete integrated system
@@ -63,6 +70,8 @@ To develop an automated system that integrates information from Google Scholar A
 | **Design Pattern** | Model-View-Controller (MVC) |
 | **Documentation** | Markdown, LaTeX |
 | **Database** | SQL (MySQL) |
+| **GUI Framework** | JavaFX 17.0.8 |
+| **Build Tool** | Maven |
 
 ## 5. Stakeholders
 
