@@ -98,6 +98,30 @@
   - Priority: High
   - Estimated Hours: 8
 
+**US-3.5: As a user, I want a graphical interface to interact with the system**
+- **Acceptance Criteria:**
+  - JavaFX GUI application implemented
+  - Search tab with API integration (Researcher, Title search)
+  - Browse tab with database filtering
+  - Authors tab with statistics and management
+  - Statistics tab with database metrics
+  - Background threading for long operations
+  - Real-time progress indicators
+  - Soft delete with confirmation dialogs
+  - Priority: High
+  - Estimated Hours: 16
+
+**US-3.6: As a user, I want to manage articles and authors through the GUI**
+- **Acceptance Criteria:**
+  - View article details in popup dialog
+  - Delete articles with confirmation (soft delete)
+  - View author statistics
+  - Delete authors with cascade handling
+  - Refresh tables after operations
+  - Color-coded buttons for different actions
+  - Priority: High
+  - Estimated Hours: 6
+
 ## Requirements Tracking Table
 
 | User Story ID | Requirement | Description |
@@ -116,6 +140,8 @@
 | US-3.2 | REQ-12 | Implement pagination handling for API results |
 | US-3.3 | REQ-13 | Develop data validation rules |
 | US-3.4 | REQ-14 | Create comprehensive test suite |
+| US-3.5 | REQ-15 | Implement JavaFX graphical user interface |
+| US-3.6 | REQ-16 | Implement GUI operations for articles and authors |
 
 ## Prioritized Requirements Table
 
@@ -135,6 +161,8 @@
 | REQ-12 | Medium | 3 | 6 | Pagination handler implementation |
 | REQ-13 | Medium | 3 | 5 | Validation rules implementation |
 | REQ-14 | High | 3 | 8 | Test suite |
+| REQ-15 | High | 3 | 16 | JavaFX GUI with 4 tabs |
+| REQ-16 | High | 3 | 6 | GUI delete operations |
 
 ## Sprint Planning
 
@@ -159,4 +187,6 @@
 - REQ-12: Implement pagination handling for API results (6h)
 - REQ-13: Develop data validation rules (5h)
 - REQ-14: Create comprehensive test suite (8h)
-- **Total Hours: 26**
+- REQ-15: Implement JavaFX GUI with 4 tabs (8h)
+- REQ-16: Implement GUI operations (6h)
+- **Total Hours: 40**
