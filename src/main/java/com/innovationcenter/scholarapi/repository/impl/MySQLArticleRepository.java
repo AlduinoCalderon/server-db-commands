@@ -35,7 +35,14 @@ public class MySQLArticleRepository implements ArticleRepository {
             
             statement.setString(1, article.getPaperTitle());
             statement.setString(2, article.getAuthors());
-            statement.setInt(3, article.getPublicationYear());
+            
+            // Handle NULL publication year
+            if (article.getPublicationYear() != null) {
+                statement.setInt(3, article.getPublicationYear());
+            } else {
+                statement.setNull(3, Types.INTEGER);
+            }
+            
             statement.setString(4, article.getAbstractText());
             statement.setString(5, article.getArticleUrl());
             statement.setString(6, article.getGoogleScholarId());
@@ -89,7 +96,7 @@ public class MySQLArticleRepository implements ArticleRepository {
     
     @Override
     public List<Article> findByAuthor(String authorName) throws SQLException {
-        String sql = "SELECT * FROM articles WHERE authors LIKE ? ORDER BY publication_year DESC";
+        String sql = "SELECT * FROM articles WHERE authors LIKE ? AND deleted_at IS NULL ORDER BY publication_year DESC";
         
         try (Connection connection = databaseService.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -106,7 +113,7 @@ public class MySQLArticleRepository implements ArticleRepository {
     
     @Override
     public List<Article> findAll() throws SQLException {
-        String sql = "SELECT * FROM articles ORDER BY publication_year DESC, citation_count DESC";
+        String sql = "SELECT * FROM articles WHERE deleted_at IS NULL ORDER BY publication_year DESC, citation_count DESC";
         
         try (Connection connection = databaseService.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -153,7 +160,7 @@ public class MySQLArticleRepository implements ArticleRepository {
     
     @Override
     public boolean deleteById(Long id) throws SQLException {
-        String sql = "DELETE FROM articles WHERE id = ?";
+        String sql = "UPDATE articles SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
         
         try (Connection connection = databaseService.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -164,9 +171,9 @@ public class MySQLArticleRepository implements ArticleRepository {
             boolean deleted = affectedRows > 0;
             
             if (deleted) {
-                logger.info("Article deleted successfully: {}", id);
+                logger.info("Article soft deleted successfully: {}", id);
             } else {
-                logger.warn("No article found with ID: {}", id);
+                logger.warn("No active article found with ID: {}", id);
             }
             
             return deleted;
@@ -179,7 +186,7 @@ public class MySQLArticleRepository implements ArticleRepository {
     
     @Override
     public long count() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM articles";
+        String sql = "SELECT COUNT(*) FROM articles WHERE deleted_at IS NULL";
         
         try (Connection connection = databaseService.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -199,7 +206,7 @@ public class MySQLArticleRepository implements ArticleRepository {
     
     @Override
     public List<Article> findByCitationsGreaterThan(int minCitations) throws SQLException {
-        String sql = "SELECT * FROM articles WHERE citation_count > ? ORDER BY citation_count DESC, publication_year DESC";
+        String sql = "SELECT * FROM articles WHERE citation_count > ? AND deleted_at IS NULL ORDER BY citation_count DESC, publication_year DESC";
         
         try (Connection connection = databaseService.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
