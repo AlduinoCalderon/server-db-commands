@@ -85,6 +85,11 @@ public interface ArticleView {
     void showDatabaseStatistics(long totalArticles);
     
     /**
+     * Display a list of articles (general purpose).
+     */
+    void displayArticles(List<Article> articles);
+    
+    /**
      * Display connectivity test started message.
      */
     void showConnectivityTestStarted();

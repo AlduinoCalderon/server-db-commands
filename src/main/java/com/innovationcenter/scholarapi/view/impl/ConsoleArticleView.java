@@ -226,4 +226,12 @@ public class ConsoleArticleView implements ArticleView {
         display.append("\n");
         return display.toString();
     }
+    
+    @Override
+    public void displayArticles(List<Article> articles) {
+        for (int i = 0; i < articles.size(); i++) {
+            Article article = articles.get(i);
+            System.out.println((i + 1) + ". " + formatArticleDisplay(article));
+        }
+    }
 }
