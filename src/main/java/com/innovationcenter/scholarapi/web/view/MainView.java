@@ -334,21 +334,21 @@ public class MainView extends VerticalLayout {
         Span citationsValue = new Span(String.valueOf(article.getCitationCount()));
         citationsSection.add(citationsLabel, citationsValue);
         
-        if (article.getUrl() != null && !article.getUrl().isEmpty()) {
+        if (article.getArticleUrl() != null && !article.getArticleUrl().isEmpty()) {
             Div urlSection = new Div();
             Span urlLabel = new Span("URL: ");
             urlLabel.getStyle().set("font-weight", "bold");
-            Span urlValue = new Span(article.getUrl());
+            Span urlValue = new Span(article.getArticleUrl());
             urlValue.getStyle().set("word-break", "break-all");
             urlSection.add(urlLabel, urlValue);
             content.add(urlSection);
         }
         
-        if (article.getSnippet() != null && !article.getSnippet().isEmpty()) {
+        if (article.getAbstractText() != null && !article.getAbstractText().isEmpty()) {
             Div snippetSection = new Div();
-            Span snippetLabel = new Span("Snippet: ");
+            Span snippetLabel = new Span("Abstract: ");
             snippetLabel.getStyle().set("font-weight", "bold");
-            Paragraph snippetValue = new Paragraph(article.getSnippet());
+            Paragraph snippetValue = new Paragraph(article.getAbstractText());
             snippetValue.getStyle().set("font-style", "italic");
             snippetSection.add(snippetLabel);
             content.add(snippetSection, snippetValue);
