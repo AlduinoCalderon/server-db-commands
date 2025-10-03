@@ -2,14 +2,18 @@ package com.innovationcenter.scholarapi.service;
 
 import com.innovationcenter.scholarapi.model.Article;
 import com.innovationcenter.scholarapi.model.ScholarSearchResponse;
+import com.innovationcenter.scholarapi.model.SimpleAuthor;
 import com.innovationcenter.scholarapi.util.PublicationInfoParser;
+import com.innovationcenter.scholarapi.util.AuthorParser;
 import com.innovationcenter.scholarapi.repository.ArticleRepository;
+import com.innovationcenter.scholarapi.repository.SimpleAuthorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Service layer for Article operations.
@@ -19,9 +23,16 @@ public class ArticleService {
     private static final Logger logger = Logger.getLogger(ArticleService.class.getName());
     
     private final ArticleRepository articleRepository;
+    private final SimpleAuthorRepository authorRepository;
     
     public ArticleService(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
+        this.authorRepository = null; // For backward compatibility
+    }
+    
+    public ArticleService(ArticleRepository articleRepository, SimpleAuthorRepository authorRepository) {
+        this.articleRepository = articleRepository;
+        this.authorRepository = authorRepository;
     }
     
     /**
@@ -125,7 +136,19 @@ public class ArticleService {
         }
         
         // Save new article
-        return articleRepository.save(article);
+        Article savedArticle = articleRepository.save(article);
+        
+        // Extract and save authors if author repository is available
+        if (authorRepository != null && savedArticle.getId() != null) {
+            try {
+                saveAuthorsForArticle(savedArticle);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to save authors for article: " + savedArticle.getId(), e);
+                // Don't fail the whole operation if author extraction fails
+            }
+        }
+        
+        return savedArticle;
     }
     
     /**
@@ -159,6 +182,32 @@ public class ArticleService {
      */
     public List<Article> findByAuthor(String authorName) throws SQLException {
         return articleRepository.findByAuthor(authorName);
+    }
+    
+    /**
+     * Searches articles by title keyword.
+     */
+    public List<Article> searchByTitle(String keyword) throws SQLException {
+        try {
+            List<Article> allArticles = articleRepository.findAll();
+            List<Article> matchingArticles = new ArrayList<>();
+            
+            String lowerKeyword = keyword.toLowerCase();
+            
+            for (Article article : allArticles) {
+                if (article.getPaperTitle() != null && 
+                    article.getPaperTitle().toLowerCase().contains(lowerKeyword)) {
+                    matchingArticles.add(article);
+                }
+            }
+            
+            logger.info("Found " + matchingArticles.size() + " articles matching title keyword: " + keyword);
+            return matchingArticles;
+            
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error searching articles by title", e);
+            throw e;
+        }
     }
     
     /**
@@ -237,5 +286,102 @@ public class ArticleService {
         }
         
         return true;
+    }
+    
+    /**
+     * Extract authors from article and save them to database.
+     * Creates author records and links them to the article.
+     */
+    private void saveAuthorsForArticle(Article article) throws SQLException {
+        if (article.getAuthors() == null || article.getAuthors().trim().isEmpty()) {
+            logger.fine("No authors to extract for article: " + article.getId());
+            return;
+        }
+        
+        // Parse authors from the author string
+        List<SimpleAuthor> authors = AuthorParser.parseAuthors(article.getAuthors());
+        
+        if (authors.isEmpty()) {
+            logger.fine("No valid authors parsed for article: " + article.getId());
+            return;
+        }
+        
+        logger.info("Extracting " + authors.size() + " authors for article: " + article.getPaperTitle());
+        
+        int position = 0;
+        for (SimpleAuthor author : authors) {
+            try {
+                // Save author (or get existing one)
+                SimpleAuthor savedAuthor = authorRepository.save(author);
+                
+                // Link author to article with position
+                authorRepository.linkToArticle(article.getId(), savedAuthor.getId(), position);
+                
+                // Update author statistics
+                // Get current stats
+                Optional<SimpleAuthor> currentAuthor = authorRepository.findById(savedAuthor.getId());
+                if (currentAuthor.isPresent()) {
+                    SimpleAuthor current = currentAuthor.get();
+                    int newArticleCount = current.getArticleCount() + 1;
+                    int newTotalCitations = current.getTotalCitations() + article.getCitationCount();
+                    
+                    authorRepository.updateStatistics(
+                        savedAuthor.getId(),
+                        newArticleCount,
+                        newTotalCitations
+                    );
+                    
+                    logger.fine("Updated statistics for author: " + savedAuthor.getFullName());
+                }
+                
+                position++;
+                
+            } catch (SQLException e) {
+                logger.log(Level.WARNING, "Failed to save author: " + author.getFullName(), e);
+                // Continue with next author
+            }
+        }
+        
+        logger.info("Successfully saved " + position + " authors for article: " + article.getId());
+    }
+    
+    /**
+     * Get all authors for a specific article.
+     */
+    public List<SimpleAuthor> getAuthorsForArticle(Long articleId) throws SQLException {
+        if (authorRepository == null) {
+            return new ArrayList<>();
+        }
+        return authorRepository.findByArticleId(articleId);
+    }
+    
+    /**
+     * Search authors by name pattern.
+     */
+    public List<SimpleAuthor> searchAuthors(String namePattern) throws SQLException {
+        if (authorRepository == null) {
+            return new ArrayList<>();
+        }
+        return authorRepository.findByNamePattern(namePattern);
+    }
+    
+    /**
+     * Get top authors by citation count.
+     */
+    public List<SimpleAuthor> getTopAuthorsByCitations(int limit) throws SQLException {
+        if (authorRepository == null) {
+            return new ArrayList<>();
+        }
+        return authorRepository.findTopByCitations(limit);
+    }
+    
+    /**
+     * Get top authors by article count.
+     */
+    public List<SimpleAuthor> getTopAuthorsByArticleCount(int limit) throws SQLException {
+        if (authorRepository == null) {
+            return new ArrayList<>();
+        }
+        return authorRepository.findTopByArticleCount(limit);
     }
 }
