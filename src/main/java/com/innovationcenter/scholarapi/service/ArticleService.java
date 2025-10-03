@@ -264,6 +264,21 @@ public class ArticleService {
     }
     
     /**
+     * Deletes an author by ID (soft delete).
+     */
+    public boolean deleteAuthor(Long id) throws SQLException {
+        if (id == null) {
+            throw new IllegalArgumentException("Author ID cannot be null");
+        }
+        
+        if (authorRepository == null) {
+            throw new IllegalStateException("Author repository not initialized");
+        }
+        
+        return authorRepository.deleteById(id);
+    }
+    
+    /**
      * Validates article data for consistency.
      */
     public boolean validateArticleData(Article article) {
