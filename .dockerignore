@@ -1,0 +1,44 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Node (Vaadin frontend)
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+webpack.generated.js
+
+# Build artifacts
+*.class
+*.log
+*.jar
+*.war
+
+# Environment
+.env
+.env.local
+
+# Vaadin
+frontend/generated/
+src/main/bundles/
+src/main/dev-bundle/
+
+# Test
+test-output/
+*.hprof

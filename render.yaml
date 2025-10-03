@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: scholar-api
+    env: java
+    region: oregon
+    plan: free
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -Xmx400m -Xms256m -jar target/server-db-commands-1.0.0.jar
+    envVars:
+      - key: JAVA_VERSION
+        value: "11"
+      - key: MAVEN_VERSION
+        value: "3.8"
+      - key: VAADIN_PRODUCTION_MODE
+        value: "true"
+      - key: SERPAPI_KEY
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+    healthCheckPath: /actuator/health
+    autoDeploy: true
