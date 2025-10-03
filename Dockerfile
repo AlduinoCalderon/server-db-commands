@@ -10,8 +10,8 @@ RUN mvn dependency:go-offline -B
 # Copy source code
 COPY src ./src
 
-# Build the application
-RUN mvn clean package -DskipTests
+# Build the application with Vaadin production mode
+RUN mvn clean package -Pproduction -DskipTests
 
 # Production stage
 FROM openjdk:11-jre-slim
@@ -25,4 +25,4 @@ COPY --from=build /app/target/server-db-commands-1.0.0.jar app.jar
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dvaadin.productionMode=true", "-jar", "app.jar"]
