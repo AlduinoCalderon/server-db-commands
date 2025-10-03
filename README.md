@@ -38,6 +38,27 @@ Eliminate manual data entry processes and create an automated pipeline that:
 
 ## 🚀 Quick Start
 
+### Web Application (Vaadin) ⭐ **NEW!**
+
+**Launch the web application** (Accessible from any browser):
+
+```bash
+# Run locally
+mvn spring-boot:run
+
+# Access at http://localhost:8080
+# Or deployed at: https://your-render-app.onrender.com
+```
+
+**Web App Features:**
+- ✅ **Search Tab:** Query Google Scholar by Researcher, Keywords, or Title
+- ✅ **Browse Tab:** Filter database (All, By Author, By Year, Highly Cited)
+- ✅ **View Details:** Full article information dialog
+- ✅ **Delete Operations:** Multi-select with confirmation
+- ✅ **Statistics Tab:** Real-time database metrics
+- ✅ **Responsive Design:** Works on desktop, tablet, and mobile
+- ✅ **Cloud Deployed:** Access from anywhere via Render
+
 ### Graphical Interface (GUI)
 
 **Launch the JavaFX GUI** (Recommended for most users):
@@ -260,9 +281,11 @@ The project successfully improves the institution's processes and strengthens th
 ### Core Technologies
 - **Language:** Java (JDK 11+)
 - **Design Pattern:** Model-View-Controller (MVC)
+- **Web Framework:** Spring Boot 2.7.14 + Vaadin 23.3.13
 - **API:** Google Scholar API (via SerpAPI)
 - **Database:** MySQL (with soft delete pattern)
-- **GUI Framework:** JavaFX 17.0.8
+- **GUI Framework:** JavaFX 17.0.8 (Desktop)
+- **Deployment:** Docker + Render (Web)
 
 ### Development Tools
 - **Version Control:** Git/GitHub
@@ -272,6 +295,20 @@ The project successfully improves the institution's processes and strengthens th
 
 ### Libraries & Dependencies
 ```xml
+<!-- Spring Boot (Web Framework) -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.7.14</version>
+</dependency>
+
+<!-- Vaadin (Web UI Framework) -->
+<dependency>
+    <groupId>com.vaadin</groupId>
+    <artifactId>vaadin-spring-boot-starter</artifactId>
+    <version>23.3.13</version>
+</dependency>
+
 <!-- API Client -->
 <dependency>
     <groupId>org.json</groupId>
@@ -443,7 +480,13 @@ The application will automatically create tables on first run. Or manually:
 
 5. **Launch the application**
 
-**GUI Version (Recommended):**
+**Web Version (Recommended for cloud access):**
+```bash
+mvn spring-boot:run
+# Access at: http://localhost:8080
+```
+
+**GUI Version (Desktop):****
 ```bash
 mvn javafx:run
 ```
@@ -541,7 +584,9 @@ Model (Data Layer)
 View (Presentation Layer)
 ├── ConsoleView.java          # Console interface
 ├── ScholarGuiApplication.java # JavaFX GUI entry point
-└── ScholarMainView.java      # Main GUI with 4 tabs
+├── ScholarMainView.java      # Main GUI with 4 tabs
+├── ScholarVaadinApplication.java # Spring Boot web app entry
+└── MainView.java             # Vaadin web UI with 3 tabs
 
 Controller (Business Logic)
 ├── ScholarController.java    # Main controller
@@ -651,15 +696,23 @@ This is an academic project for the Innovation Center. Internal contributions fo
   - Statistics tab with metrics
 - ✅ CRUD operations (View, Delete, Refresh) (4 hours)
 - ✅ CSS styling and UX improvements (2 hours)
+- ✅ **Vaadin Web Application (8 hours)** ⭐ NEW!
+  - Complete feature parity with JavaFX
+  - Search with 3 types (Researcher, Keywords, Title)
+  - Browse with 4 filters (All, Author, Year, Highly Cited)
+  - View Details dialog
+  - Cloud deployment on Render
 
 ### Current Features
-- 🎯 **2 User Interfaces:** GUI (JavaFX) + Console
-- 🔍 **3 Search Types:** Researcher, Query, Title
-- 📊 **4 GUI Tabs:** Search, Browse, Authors, Statistics
+- 🎯 **3 User Interfaces:** Web (Vaadin) + GUI (JavaFX) + Console
+- 🔍 **3 Search Types:** Researcher, Query/Keywords, Title
+- 📊 **3-4 Tabs:** Search, Browse, Statistics (+ Authors in JavaFX only)
+- 🌐 **Cloud Deployed:** Accessible via Render at any time
 - 💾 **Database Integration:** MySQL with HikariCP connection pooling
 - 👥 **Author Tracking:** Automatic extraction and statistics
 - 🗑️ **Soft Delete:** Safe deletion with recovery option
 - ✅ **CRUD Operations:** Complete Create, Read, Update, Delete
+- 📱 **Responsive:** Web version works on all devices
 
 ## 🚧 Future Enhancements
 

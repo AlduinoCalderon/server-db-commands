@@ -22,11 +22,22 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
+import com.vaadin.flow.server.PWA;
 
 import java.util.List;
 import java.util.Set;
 
 @Route("")
+@PageTitle("Scholar API - Research Article Management")
+@Theme(value = "scholar-theme", variant = Lumo.LIGHT)
+@PWA(
+    name = "Scholar API",
+    shortName = "Scholar",
+    description = "Research Article Management System"
+)
 public class MainView extends VerticalLayout {
 
     private final ArticleRepository articleRepository;
@@ -40,10 +51,15 @@ public class MainView extends VerticalLayout {
         this.integrationService = integrationService;
         
         setSizeFull();
-        setPadding(true);
+        setPadding(false);
+        setSpacing(false);
         
-        H1 header = new H1("Scholar API - Research Article Management");
-        header.getStyle().set("color", "#2c5f7c");
+        // Responsive header
+        H1 header = new H1("Scholar API");
+        header.getStyle()
+            .set("color", "#2c5f7c")
+            .set("margin", "var(--lumo-space-m)")
+            .set("font-size", "clamp(1.5rem, 4vw, 2.5rem)");
         
         Tab searchTab = new Tab("Search & Import");
         Tab browseTab = new Tab("Browse Articles");
@@ -51,6 +67,9 @@ public class MainView extends VerticalLayout {
         
         Tabs tabs = new Tabs(searchTab, browseTab, statsTab);
         tabs.setWidthFull();
+        tabs.getStyle()
+            .set("margin", "0 var(--lumo-space-m)")
+            .set("flex-wrap", "wrap");
         
         VerticalLayout contentArea = new VerticalLayout();
         contentArea.setSizeFull();
@@ -85,17 +104,20 @@ public class MainView extends VerticalLayout {
         ComboBox<String> searchType = new ComboBox<>("Search by:");
         searchType.setItems("Researcher Name", "Query/Keywords", "Title");
         searchType.setValue("Researcher Name");
-        searchType.setWidth("200px");
+        searchType.setWidthFull();
+        searchType.setMinWidth("150px");
+        searchType.setMaxWidth("250px");
         
         TextField searchField = new TextField("Search term");
         searchField.setPlaceholder("Enter search term...");
-        searchField.setWidth("400px");
+        searchField.setWidthFull();
+        searchField.setMinWidth("200px");
         
         IntegerField maxResultsField = new IntegerField("Max Results");
         maxResultsField.setValue(10);
         maxResultsField.setMin(1);
         maxResultsField.setMax(100);
-        maxResultsField.setWidth("150px");
+        maxResultsField.setWidth("120px");
         
         Button searchBtn = new Button("Search & Import");
         searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -138,7 +160,13 @@ public class MainView extends VerticalLayout {
         });
         
         HorizontalLayout controls = new HorizontalLayout(searchType, searchField, maxResultsField, searchBtn);
+        controls.setWidthFull();
         controls.setAlignItems(Alignment.END);
+        controls.getStyle()
+            .set("flex-wrap", "wrap")
+            .set("gap", "var(--lumo-space-s)")
+            .set("row-gap", "var(--lumo-space-s)");
+        searchField.getStyle().set("flex", "1 1 200px");
         
         layout.add(heading, hint, controls, searchResultsGrid);
         return layout;
@@ -155,11 +183,14 @@ public class MainView extends VerticalLayout {
         ComboBox<String> filterType = new ComboBox<>("Filter by:");
         filterType.setItems("All Articles", "By Author", "By Year (and newer)", "Highly Cited (minimum)");
         filterType.setValue("All Articles");
-        filterType.setWidth("200px");
+        filterType.setWidthFull();
+        filterType.setMinWidth("150px");
+        filterType.setMaxWidth("250px");
         
         TextField filterValue = new TextField("Filter value");
         filterValue.setPlaceholder("Enter filter value...");
-        filterValue.setWidth("300px");
+        filterValue.setWidthFull();
+        filterValue.setMinWidth("200px");
         filterValue.setEnabled(false);
         
         filterType.addValueChangeListener(e -> {
@@ -192,19 +223,34 @@ public class MainView extends VerticalLayout {
         deleteBtn.setEnabled(false);
         
         HorizontalLayout filters = new HorizontalLayout(filterType, filterValue, applyFilterBtn);
+        filters.setWidthFull();
         filters.setAlignItems(Alignment.END);
+        filters.getStyle()
+            .set("flex-wrap", "wrap")
+            .set("gap", "var(--lumo-space-s)")
+            .set("row-gap", "var(--lumo-space-s)");
+        filterValue.getStyle().set("flex", "1 1 200px");
         
         HorizontalLayout controls = new HorizontalLayout(viewDetailsBtn, deleteBtn);
+        controls.setWidthFull();
         controls.setAlignItems(Alignment.END);
+        controls.getStyle()
+            .set("flex-wrap", "wrap")
+            .set("gap", "var(--lumo-space-s)");
         
         articleGrid = new Grid<>(Article.class, false);
-        articleGrid.addColumn(Article::getId).setHeader("ID").setWidth("80px").setFlexGrow(0);
-        articleGrid.addColumn(Article::getTitle).setHeader("Title").setFlexGrow(1);
-        articleGrid.addColumn(Article::getAuthors).setHeader("Authors").setWidth("200px");
-        articleGrid.addColumn(Article::getPublicationYear).setHeader("Year").setWidth("100px");
-        articleGrid.addColumn(Article::getCitationCount).setHeader("Citations").setWidth("120px");
+        articleGrid.addColumn(Article::getId).setHeader("ID").setWidth("80px").setFlexGrow(0).setVisible(false); // Hidden on mobile
+        articleGrid.addColumn(Article::getTitle).setHeader("Title").setFlexGrow(1).setAutoWidth(false);
+        articleGrid.addColumn(Article::getAuthors).setHeader("Authors").setAutoWidth(true).setFlexGrow(0);
+        articleGrid.addColumn(Article::getPublicationYear).setHeader("Year").setWidth("80px").setFlexGrow(0);
+        articleGrid.addColumn(Article::getCitationCount).setHeader("Citations").setWidth("100px").setFlexGrow(0);
         articleGrid.setSizeFull();
         articleGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        articleGrid.getStyle().set("--lumo-font-size-s", "0.875rem");
+        
+        // Make grid responsive
+        articleGrid.setHeightFull();
+        articleGrid.setAllRowsVisible(false);
         
         articleGrid.addSelectionListener(event -> {
             Set<Article> selected = event.getAllSelectedItems();
@@ -294,11 +340,15 @@ public class MainView extends VerticalLayout {
     private void showArticleDetails(Article article) {
         Dialog detailsDialog = new Dialog();
         detailsDialog.setHeaderTitle("Article Details");
-        detailsDialog.setWidth("700px");
+        detailsDialog.setWidth("min(700px, 95vw)"); // Responsive width
+        detailsDialog.setMaxHeight("90vh"); // Prevent overflow on mobile
         
         VerticalLayout content = new VerticalLayout();
         content.setPadding(false);
         content.setSpacing(true);
+        content.getStyle()
+            .set("overflow-y", "auto")
+            .set("max-height", "calc(90vh - 120px)"); // Account for header and footer
         
         Div titleSection = new Div();
         Span titleLabel = new Span("Title: ");

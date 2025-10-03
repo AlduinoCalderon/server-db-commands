@@ -30,4 +30,15 @@ public interface ConfigurationService {
      * @return Property value or null if not found
      */
     String getProperty(String key);
+    
+    /**
+     * Get configuration property by key with default value.
+     * @param key Property key
+     * @param defaultValue Default value if property not found
+     * @return Property value or default value
+     */
+    default String getPropertyOrDefault(String key, String defaultValue) {
+        String value = getProperty(key);
+        return (value != null && !value.trim().isEmpty()) ? value : defaultValue;
+    }
 }

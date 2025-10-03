@@ -65,12 +65,27 @@ public class MySQLDatabaseService implements DatabaseService {
         config.setPassword(password);
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         
-        // Connection pool settings
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(2);
+        // Connection pool settings optimized for Clever Cloud free tier (5 max connections)
+        // With multiple Render instances, we need to be very conservative
+        // Allow override via environment variables for flexibility
+        int maxPoolSize = Integer.parseInt(
+            configService.getPropertyOrDefault("DB_MAX_POOL_SIZE", "2"));
+        int minIdle = Integer.parseInt(
+            configService.getPropertyOrDefault("DB_MIN_IDLE", "1"));
+        
+        config.setMaximumPoolSize(maxPoolSize);
+        config.setMinimumIdle(minIdle);
         config.setConnectionTimeout(30000);
-        config.setIdleTimeout(600000);
+        config.setIdleTimeout(300000);  // 5 minutes (reduced from 10 minutes)
         config.setMaxLifetime(1800000);
+        config.setLeakDetectionThreshold(60000); // Detect connection leaks after 60 seconds
+        
+        // Connection pooling behavior
+        config.setAutoCommit(true);
+        config.setConnectionTestQuery("SELECT 1");
+        config.setValidationTimeout(3000);
+        
+        logger.info("Connection pool configured: maxPoolSize={}, minIdle={}", maxPoolSize, minIdle);
         
         // Additional MySQL-specific settings
         config.addDataSourceProperty("useSSL", "true");

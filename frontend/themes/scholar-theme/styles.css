@@ -1,0 +1,14 @@
+/* Import responsive styles */
+@import url('../../styles/responsive.css');
+
+/* Theme customizations */
+html {
+    --lumo-primary-color: #2c5f7c;
+    --lumo-primary-color-50pct: rgba(44, 95, 124, 0.5);
+    --lumo-primary-color-10pct: rgba(44, 95, 124, 0.1);
+}
+
+/* Ensure viewport is set correctly */
+html, body {
+    overflow-x: hidden;
+}

@@ -1,0 +1,136 @@
+/* Mobile-first responsive styles for Scholar API */
+
+/* Global viewport and font adjustments */
+:root {
+    --mobile-padding: var(--lumo-space-s);
+    --desktop-padding: var(--lumo-space-l);
+}
+
+/* Base mobile styles */
+@media (max-width: 768px) {
+    /* Make buttons full width on mobile */
+    vaadin-button {
+        width: 100% !important;
+        max-width: 100%;
+    }
+    
+    /* Adjust grid columns for mobile */
+    vaadin-grid {
+        font-size: 0.875rem;
+    }
+    
+    vaadin-grid::part(cell) {
+        padding: var(--lumo-space-xs);
+    }
+    
+    /* Stack horizontal layouts on mobile */
+    vaadin-horizontal-layout {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    vaadin-horizontal-layout > * {
+        width: 100% !important;
+        margin-bottom: var(--lumo-space-s);
+    }
+    
+    /* Make text fields full width */
+    vaadin-text-field,
+    vaadin-combo-box,
+    vaadin-integer-field {
+        width: 100% !important;
+        max-width: 100%;
+    }
+    
+    /* Adjust dialog size for mobile */
+    vaadin-dialog-overlay {
+        max-width: 95vw !important;
+        max-height: 90vh !important;
+    }
+    
+    /* Header responsive font size */
+    h1 {
+        font-size: clamp(1.5rem, 5vw, 2.5rem) !important;
+        word-break: break-word;
+    }
+    
+    h3 {
+        font-size: clamp(1.2rem, 4vw, 1.75rem) !important;
+    }
+    
+    /* Tabs responsive */
+    vaadin-tabs {
+        font-size: 0.875rem;
+    }
+    
+    vaadin-tab {
+        min-width: auto;
+        padding: var(--lumo-space-s);
+    }
+    
+    /* Grid responsive adjustments */
+    vaadin-grid-cell-content {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    vaadin-button {
+        min-width: 120px;
+    }
+    
+    vaadin-grid {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1025px) {
+    vaadin-horizontal-layout {
+        flex-wrap: wrap;
+    }
+    
+    vaadin-button {
+        min-width: 140px;
+    }
+}
+
+/* Touch-friendly improvements for all mobile devices */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch target sizes */
+    vaadin-button,
+    vaadin-tab {
+        min-height: 44px;
+        padding: var(--lumo-space-m);
+    }
+    
+    vaadin-grid {
+        --lumo-space-s: 0.75rem;
+    }
+    
+    /* Better checkbox sizes for touch */
+    vaadin-checkbox {
+        --lumo-size-m: 24px;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    vaadin-dialog-overlay {
+        max-height: 95vh !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    vaadin-tabs,
+    vaadin-button {
+        display: none !important;
+    }
+    
+    vaadin-grid {
+        border: 1px solid #ccc;
+    }
+}
