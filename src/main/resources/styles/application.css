@@ -1,0 +1,96 @@
+/* Application Styles */
+
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-background-color: #ffffff;
+}
+
+/* Buttons */
+.button {
+    -fx-cursor: hand;
+    -fx-padding: 8 16 8 16;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.button:hover {
+    -fx-opacity: 0.9;
+}
+
+.button:pressed {
+    -fx-opacity: 0.8;
+}
+
+/* Tables */
+.table-view {
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+}
+
+.table-view .column-header {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: white;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+/* Tabs */
+.tab-pane {
+    -fx-tab-min-height: 40px;
+}
+
+.tab {
+    -fx-background-color: #ecf0f1;
+    -fx-font-weight: bold;
+}
+
+.tab:selected {
+    -fx-background-color: white;
+}
+
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: #bdc3c7;
+}
+
+/* Input fields */
+.text-field, .text-area, .combo-box {
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+
+.text-field:focused, .text-area:focused, .combo-box:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2;
+}
+
+/* Spinner */
+.spinner {
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+}
+
+/* Progress bar */
+.progress-bar {
+    -fx-accent: #3498db;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #2c3e50;
+}
