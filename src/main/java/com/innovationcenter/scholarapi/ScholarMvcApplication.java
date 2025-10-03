@@ -2,7 +2,9 @@ package com.innovationcenter.scholarapi;
 
 import com.innovationcenter.scholarapi.controller.ScholarArticleController;
 import com.innovationcenter.scholarapi.repository.ArticleRepository;
+import com.innovationcenter.scholarapi.repository.SimpleAuthorRepository;
 import com.innovationcenter.scholarapi.repository.impl.MySQLArticleRepository;
+import com.innovationcenter.scholarapi.repository.impl.MySQLSimpleAuthorRepository;
 import com.innovationcenter.scholarapi.service.ArticleService;
 import com.innovationcenter.scholarapi.service.ConfigurationService;
 import com.innovationcenter.scholarapi.service.DatabaseService;
@@ -61,12 +63,13 @@ public class ScholarMvcApplication {
         
         // Repository layer
         ArticleRepository articleRepository = new MySQLArticleRepository(databaseService);
+        SimpleAuthorRepository authorRepository = new MySQLSimpleAuthorRepository(databaseService);
         
         // External service layer
         ScholarSearchService searchService = new SerpApiScholarSearchService(configService);
         
         // Business service layer
-        ArticleService articleService = new ArticleService(articleRepository);
+        ArticleService articleService = new ArticleService(articleRepository, authorRepository);
         
         // View layer
         ArticleView articleView = new ConsoleArticleView();
@@ -115,13 +118,13 @@ public class ScholarMvcApplication {
         System.out.println("=".repeat(50));
         System.out.println("1. 🔍 Search articles by researcher name");
         System.out.println("2. 🔎 Search articles by query");
-        System.out.println("3. 🚀 Process multiple researchers (Sprint 3 Demo)");
-        System.out.println("4. 👥 Display articles by author");
-        System.out.println("5. 📅 Display articles by year");
-        System.out.println("6. ⭐ Display highly cited articles");
-        System.out.println("7. 📊 Show database statistics");
-        System.out.println("8. 🔧 Test system connectivity");
-        System.out.println("9. 🎯 Run Sprint 3 Demo (2 researchers, 3 articles each)");
+        System.out.println("3. � Search articles by title");
+        System.out.println("4. �🚀 Process multiple researchers");
+        System.out.println("5. 👥 Display articles by author");
+        System.out.println("6. 📅 Display articles by year");
+        System.out.println("7. ⭐ Display highly cited articles");
+        System.out.println("8. 📊 Show database statistics");
+        System.out.println("9. 🔧 Test system connectivity");
         System.out.println("0. 🚪 Exit");
         System.out.println("=".repeat(50));
         System.out.print("Enter your choice: ");
@@ -136,25 +139,25 @@ public class ScholarMvcApplication {
                 handleSearchByQuery();
                 break;
             case 3:
-                handleMultipleResearchers();
+                handleSearchByTitle();
                 break;
             case 4:
-                handleDisplayByAuthor();
+                handleMultipleResearchers();
                 break;
             case 5:
-                handleDisplayByYear();
+                handleDisplayByAuthor();
                 break;
             case 6:
-                handleDisplayHighlyCited();
+                handleDisplayByYear();
                 break;
             case 7:
-                controller.displayDatabaseStatistics();
+                handleDisplayHighlyCited();
                 break;
             case 8:
-                controller.testSystemConnectivity();
+                controller.displayDatabaseStatistics();
                 break;
             case 9:
-                runSprint3Demo();
+                controller.testSystemConnectivity();
                 break;
             case 0:
                 return false;
@@ -237,26 +240,17 @@ public class ScholarMvcApplication {
     }
     
     /**
-     * Runs the Sprint 3 demonstration with 2 researchers and 3 articles each.
-     * This fulfills the Technical Report requirements for database integration testing.
+     * Handles searching articles by title keyword.
      */
-    private void runSprint3Demo() {
-        System.out.println("\n🎯 SPRINT 3 DEMONSTRATION");
-        System.out.println("   Technical Report Requirements: 2 researchers, 3 articles each");
-        System.out.println();
+    private void handleSearchByTitle() {
+        System.out.print("Enter title keyword to search: ");
+        String keyword = scanner.nextLine();
         
-        // Define test researchers as specified in requirements
-        List<String> demoResearchers = Arrays.asList(
-            "John Smith machine learning",
-            "Maria Garcia artificial intelligence"
-        );
+        if (keyword.trim().isEmpty()) {
+            System.err.println("❌ Title keyword cannot be empty");
+            return;
+        }
         
-        int articlesPerResearcher = 3;
-        
-        controller.processMultipleResearchers(demoResearchers, articlesPerResearcher);
-        
-        // Show final statistics
-        System.out.println("\n📈 SPRINT 3 DEMO COMPLETED");
-        controller.displayDatabaseStatistics();
+        controller.searchArticlesByTitle(keyword);
     }
 }
