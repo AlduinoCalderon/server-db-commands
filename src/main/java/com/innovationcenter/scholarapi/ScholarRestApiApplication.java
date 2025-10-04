@@ -41,7 +41,8 @@ public class ScholarRestApiApplication {
     }
 
     /**
-     * Configure CORS to allow requests from GitHub Pages.
+     * Configure CORS to allow requests from GitHub Pages and testing tools.
+     * Using allowedOriginPatterns for wildcards since allowCredentials is disabled.
      */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -49,15 +50,10 @@ public class ScholarRestApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                    .allowedOrigins(
-                        "http://localhost:3000",
-                        "http://localhost:5500", 
-                        "http://127.0.0.1:5500",
-                        "https://*.github.io"  // Allow GitHub Pages
-                    )
+                    .allowedOriginPatterns("*")  // Allow all origins for REST API
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
-                    .allowCredentials(true)
+                    .allowCredentials(false)  // Must be false when using "*"
                     .maxAge(3600);
             }
         };
