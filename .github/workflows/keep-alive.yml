@@ -1,0 +1,124 @@
+name: Keep Render Services Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes (free tier limit: max 2000 minutes/month = ~66 hours)
+    # Adjust to every 14 minutes to stay well under limit: */14 * * * *
+    - cron: '*/10 * * * *'
+  
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  ping-rest-api:
+    name: Ping REST API Service
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping REST API Health Endpoint
+        run: |
+          echo "🔍 Pinging REST API service..."
+          
+          # Replace with your actual Render URL once deployed
+          API_URL="${{ secrets.REST_API_URL }}"
+          
+          if [ -z "$API_URL" ]; then
+            echo "⚠️ REST_API_URL secret not set. Skipping REST API ping."
+            echo "📝 Add your Render URL in: Settings → Secrets → Actions → New secret"
+            echo "   Name: REST_API_URL"
+            echo "   Value: https://your-rest-api.onrender.com"
+            exit 0
+          fi
+          
+          # Ping health endpoint
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/actuator/health" || echo "000")
+          
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ REST API is alive! (HTTP $RESPONSE)"
+          else
+            echo "❌ REST API health check failed (HTTP $RESPONSE)"
+            exit 1
+          fi
+      
+      - name: Ping REST API Articles Endpoint
+        run: |
+          API_URL="${{ secrets.REST_API_URL }}"
+          
+          if [ -z "$API_URL" ]; then
+            exit 0
+          fi
+          
+          # Ping a lightweight endpoint
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/api/articles/health" || echo "000")
+          
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ REST API articles endpoint alive! (HTTP $RESPONSE)"
+          else
+            echo "⚠️ REST API articles endpoint check failed (HTTP $RESPONSE)"
+          fi
+
+  ping-vaadin-ui:
+    name: Ping Vaadin UI Service
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Vaadin UI Health Endpoint
+        run: |
+          echo "🔍 Pinging Vaadin UI service..."
+          
+          # Replace with your actual Render URL once deployed
+          UI_URL="${{ secrets.VAADIN_UI_URL }}"
+          
+          if [ -z "$UI_URL" ]; then
+            echo "⚠️ VAADIN_UI_URL secret not set. Skipping Vaadin UI ping."
+            echo "📝 Add your Render URL in: Settings → Secrets → Actions → New secret"
+            echo "   Name: VAADIN_UI_URL"
+            echo "   Value: https://your-vaadin-ui.onrender.com"
+            exit 0
+          fi
+          
+          # Ping health endpoint
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$UI_URL/actuator/health" || echo "000")
+          
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ Vaadin UI is alive! (HTTP $RESPONSE)"
+          else
+            echo "❌ Vaadin UI health check failed (HTTP $RESPONSE)"
+            exit 1
+          fi
+      
+      - name: Ping Vaadin UI Main Page
+        run: |
+          UI_URL="${{ secrets.VAADIN_UI_URL }}"
+          
+          if [ -z "$UI_URL" ]; then
+            exit 0
+          fi
+          
+          # Ping the main UI page
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$UI_URL/" || echo "000")
+          
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ Vaadin UI main page alive! (HTTP $RESPONSE)"
+          else
+            echo "⚠️ Vaadin UI main page check failed (HTTP $RESPONSE)"
+          fi
+
+  summary:
+    name: Ping Summary
+    runs-on: ubuntu-latest
+    needs: [ping-rest-api, ping-vaadin-ui]
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "📊 Keep-Alive Summary"
+          echo "===================="
+          echo "✅ Workflow completed"
+          echo "🕐 Next run: in 10 minutes"
+          echo ""
+          echo "📝 To configure URLs:"
+          echo "   1. Go to: https://github.com/${{ github.repository }}/settings/secrets/actions"
+          echo "   2. Add secrets: REST_API_URL and VAADIN_UI_URL"
+          echo "   3. Values: Your Render service URLs"
