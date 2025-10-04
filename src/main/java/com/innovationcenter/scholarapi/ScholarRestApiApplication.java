@@ -7,10 +7,12 @@ import com.innovationcenter.scholarapi.service.ArticleIntegrationService;
 import com.innovationcenter.scholarapi.service.ConfigurationService;
 import com.innovationcenter.scholarapi.service.DatabaseService;
 import com.innovationcenter.scholarapi.service.JsonParser;
+import com.innovationcenter.scholarapi.service.ScholarSearchService;
 import com.innovationcenter.scholarapi.service.impl.DotenvConfigurationService;
 import com.innovationcenter.scholarapi.service.impl.GoogleScholarApiService;
 import com.innovationcenter.scholarapi.service.impl.GoogleScholarJsonParser;
 import com.innovationcenter.scholarapi.service.impl.MySQLDatabaseService;
+import com.innovationcenter.scholarapi.service.impl.SerpApiScholarSearchService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -86,6 +88,11 @@ public class ScholarRestApiApplication {
     @Bean
     public ApiService apiService(ConfigurationService configService, JsonParser jsonParser) {
         return new GoogleScholarApiService(configService, jsonParser);
+    }
+
+    @Bean
+    public ScholarSearchService scholarSearchService(ConfigurationService configService) {
+        return new SerpApiScholarSearchService(configService);
     }
 
     @Bean
