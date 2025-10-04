@@ -51,32 +51,34 @@ public class ScholarSearchRestController {
             @RequestParam(defaultValue = "10") int maxResults) {
         
         try {
-            logger.info("Searching articles with query: {} (maxResults: {})", query, maxResults);
+            logger.info("🔎 Searching articles with query: '{}' (maxResults: {})", query, maxResults);
             
             if (query == null || query.trim().isEmpty()) {
+                logger.warn("⚠️  Empty query provided");
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Query parameter is required"));
             }
             
             if (maxResults < 1 || maxResults > 20) {
+                logger.warn("⚠️  Invalid maxResults: {} (must be 1-20)", maxResults);
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("maxResults must be between 1 and 20"));
             }
             
+            logger.info("🌐 Calling SerpAPI for query: '{}'...", query);
             ScholarSearchResponse response = searchService.searchArticles(query, maxResults);
             
-            logger.info("Found {} results for query: {}", 
-                response.getOrganicResults() != null ? response.getOrganicResults().length : 0, 
-                query);
+            int resultCount = response.getOrganicResults() != null ? response.getOrganicResults().length : 0;
+            logger.info("✅ Found {} results for query: '{}'", resultCount, query);
             
             return ResponseEntity.ok(response);
             
         } catch (IOException e) {
-            logger.error("Error searching articles: " + e.getMessage(), e);
+            logger.error("❌ SerpAPI error for query '{}': {}", query, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(createErrorResponse("Failed to fetch search results from SerpAPI: " + e.getMessage()));
         } catch (Exception e) {
-            logger.error("Unexpected error searching articles: " + e.getMessage(), e);
+            logger.error("❌ Unexpected error searching articles for query '{}': {}", query, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(createErrorResponse("An unexpected error occurred: " + e.getMessage()));
         }

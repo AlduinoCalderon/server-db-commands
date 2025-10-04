@@ -50,11 +50,12 @@ public class ArticleRestController {
     @GetMapping
     public ResponseEntity<List<Article>> getAllArticles() {
         try {
+            logger.info("📚 Fetching all articles from database...");
             List<Article> articles = articleRepository.findAll();
-            logger.info("Retrieved {} articles", articles.size());
+            logger.info("✅ Retrieved {} articles successfully", articles.size());
             return ResponseEntity.ok(articles);
         } catch (Exception e) {
-            logger.error("Error retrieving articles", e);
+            logger.error("❌ Error retrieving articles", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -66,11 +67,18 @@ public class ArticleRestController {
     @GetMapping("/{id}")
     public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
         try {
+            logger.info("🔍 Fetching article with ID: {}", id);
             return articleRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(article -> {
+                    logger.info("✅ Found article: {}", article.getTitle());
+                    return ResponseEntity.ok(article);
+                })
+                .orElseGet(() -> {
+                    logger.warn("⚠️  Article not found with ID: {}", id);
+                    return ResponseEntity.notFound().build();
+                });
         } catch (Exception e) {
-            logger.error("Error retrieving article {}", id, e);
+            logger.error("❌ Error retrieving article {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
