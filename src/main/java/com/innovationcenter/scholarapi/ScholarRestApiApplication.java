@@ -13,9 +13,15 @@ import com.innovationcenter.scholarapi.service.impl.GoogleScholarApiService;
 import com.innovationcenter.scholarapi.service.impl.GoogleScholarJsonParser;
 import com.innovationcenter.scholarapi.service.impl.MySQLDatabaseService;
 import com.innovationcenter.scholarapi.service.impl.SerpApiScholarSearchService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -36,8 +42,65 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class ScholarRestApiApplication {
 
+    private static final Logger logger = LoggerFactory.getLogger(ScholarRestApiApplication.class);
+
+    @Autowired
+    private Environment env;
+
     public static void main(String[] args) {
+        logger.info("========================================");
+        logger.info("🚀 Starting Scholar REST API Application");
+        logger.info("========================================");
         SpringApplication.run(ScholarRestApiApplication.class, args);
+    }
+
+    /**
+     * Logs application startup information after Spring Boot is ready.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void logApplicationStartup() {
+        String port = env.getProperty("server.port", "8080");
+        String appName = env.getProperty("spring.application.name", "Scholar REST API");
+        
+        logger.info("========================================");
+        logger.info("✅ {} is now running!", appName);
+        logger.info("🌐 Server running on port: {}", port);
+        logger.info("🏥 Health check: http://localhost:{}/actuator/health", port);
+        logger.info("📚 API Base URL: http://localhost:{}/api", port);
+        logger.info("========================================");
+        logger.info("📋 Available Endpoints:");
+        logger.info("  Database Operations:");
+        logger.info("    GET    /api/articles - Get all articles");
+        logger.info("    GET    /api/articles/{id} - Get article by ID");
+        logger.info("    GET    /api/articles/search - Search articles");
+        logger.info("    POST   /api/articles/import - Import from Google Scholar");
+        logger.info("    DELETE /api/articles/{id} - Delete article");
+        logger.info("    GET    /api/articles/stats - Get statistics");
+        logger.info("  Live Search (SerpAPI):");
+        logger.info("    GET    /api/search/articles - Search articles");
+        logger.info("    GET    /api/search/author - Search by author");
+        logger.info("    GET    /api/search/citations - Find citing articles");
+        logger.info("    GET    /api/search/paginated - Paginated search");
+        logger.info("    GET    /api/search/health - Search service health");
+        logger.info("========================================");
+        
+        // Log environment status
+        String dbHost = env.getProperty("DB_HOST");
+        String serpApiKey = env.getProperty("SERP_API_KEY");
+        
+        if (dbHost != null && !dbHost.isEmpty()) {
+            logger.info("✅ Database configured: {}", dbHost);
+        } else {
+            logger.warn("⚠️  Database host not configured!");
+        }
+        
+        if (serpApiKey != null && !serpApiKey.isEmpty()) {
+            logger.info("✅ SerpAPI key configured ({}...)", serpApiKey.substring(0, Math.min(8, serpApiKey.length())));
+        } else {
+            logger.warn("⚠️  SerpAPI key not configured!");
+        }
+        
+        logger.info("========================================");
     }
 
     /**
