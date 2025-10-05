@@ -59,9 +59,13 @@ cd server-db-commands
 mvn -v  # Should show Maven 3.6+ and Java 11+
 ```
 
-3. **Compile the project**
+3. **Build the project**
 ```powershell
-mvn clean compile -DskipTests
+# Complete build with JAR creation
+mvn clean package -DskipTests
+
+# Optional: Run tests to verify everything works
+mvn test
 ```
 
 4. **Configure environment variables**
