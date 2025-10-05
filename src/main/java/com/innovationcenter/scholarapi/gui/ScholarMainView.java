@@ -569,7 +569,67 @@ public class ScholarMainView {
         firstSeenCol.setPrefWidth(150);
         
         table.getColumns().addAll(idCol, nameCol, articlesCol, citationsCol, avgCol, firstSeenCol);
-        
+        // Actions column (View / Delete) - row-level CRUD hooks for easy refactor later
+        TableColumn<SimpleAuthor, Void> authorActions = new TableColumn<>("Actions");
+        authorActions.setPrefWidth(140);
+        authorActions.setCellFactory(col -> new TableCell<>() {
+            private final Button viewBtn = new Button("View");
+            private final Button delBtn = new Button("Delete");
+            private final HBox box = new HBox(6, viewBtn, delBtn);
+
+            {
+                viewBtn.getStyleClass().addAll("action-button", "view");
+                delBtn.getStyleClass().addAll("action-button", "delete");
+
+                viewBtn.setOnAction(e -> {
+                    SimpleAuthor author = getTableView().getItems().get(getIndex());
+                    if (author != null) showAuthorDetails(author);
+                });
+
+                delBtn.setOnAction(e -> {
+                    SimpleAuthor author = getTableView().getItems().get(getIndex());
+                    if (author == null) return;
+
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirm Delete");
+                    confirm.setHeaderText("Delete Author?");
+                    confirm.setContentText("Are you sure you want to delete author:\n\"" + author.getFullName() + "\"?\n\nThis will perform a soft delete (can be restored).");
+
+                    confirm.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            new Thread(() -> {
+                                try {
+                                    boolean success = articleService.deleteAuthor(author.getId());
+                                    Platform.runLater(() -> {
+                                        if (success) {
+                                            getTableView().getItems().remove(author);
+                                            showAlert("Success", "Author '" + author.getFullName() + "' has been soft-deleted.");
+                                        } else {
+                                            showAlert("Delete Failed", "Author could not be deleted.");
+                                        }
+                                    });
+                                } catch (Exception ex) {
+                                    Platform.runLater(() -> showAlert("Delete Error", ex.getMessage()));
+                                }
+                            }).start();
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(box);
+                }
+            }
+        });
+
+        table.getColumns().add(authorActions);
+
         return table;
     }
     
@@ -638,6 +698,67 @@ public class ScholarMainView {
         citationsCol.setPrefWidth(80);
         
         table.getColumns().addAll(idCol, titleCol, authorsCol, yearCol, journalCol, citationsCol);
+
+        // Actions column (View / Delete) - row-level buttons for CRUD operations
+        TableColumn<Article, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(140);
+        actionsCol.setCellFactory(col -> new TableCell<>() {
+            private final Button viewBtn = new Button("View");
+            private final Button delBtn = new Button("Delete");
+            private final HBox box = new HBox(6, viewBtn, delBtn);
+
+            {
+                viewBtn.getStyleClass().addAll("action-button", "view");
+                delBtn.getStyleClass().addAll("action-button", "delete");
+
+                viewBtn.setOnAction(e -> {
+                    Article article = getTableView().getItems().get(getIndex());
+                    if (article != null) showArticleDetails(article);
+                });
+
+                delBtn.setOnAction(e -> {
+                    Article article = getTableView().getItems().get(getIndex());
+                    if (article == null) return;
+
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirm Delete");
+                    confirm.setHeaderText("Delete Article?");
+                    confirm.setContentText("Are you sure you want to delete:\n\"" + article.getPaperTitle() + "\"?\n\nThis will perform a soft delete (can be restored).\n");
+
+                    confirm.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            new Thread(() -> {
+                                try {
+                                    boolean success = articleService.deleteArticle(article.getId());
+                                    Platform.runLater(() -> {
+                                        if (success) {
+                                            getTableView().getItems().remove(article);
+                                            showAlert("Success", "Article deleted successfully (soft delete)");
+                                        } else {
+                                            showAlert("Error", "Failed to delete article");
+                                        }
+                                    });
+                                } catch (Exception ex) {
+                                    Platform.runLater(() -> showAlert("Delete Error", ex.getMessage()));
+                                }
+                            }).start();
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(box);
+                }
+            }
+        });
+
+        table.getColumns().add(actionsCol);
         
         return table;
     }
