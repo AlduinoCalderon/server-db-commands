@@ -38,6 +38,54 @@ Eliminate manual data entry processes and create an automated pipeline that:
 
 ## 🚀 Quick Start
 
+### Complete Setup Guide (Windows PowerShell)
+
+**Prerequisites:**
+- Java JDK 11+ 
+- Maven 3.6+
+- MySQL 8.0+ (local or remote)
+- SerpAPI account and key
+
+**Step-by-step setup:**
+
+1. **Clone the repository**
+```powershell
+git clone https://github.com/AlduinoCalderon/server-db-commands
+cd server-db-commands
+```
+
+2. **Verify environment**
+```powershell
+mvn -v  # Should show Maven 3.6+ and Java 11+
+```
+
+3. **Compile the project**
+```powershell
+mvn clean compile -DskipTests
+```
+
+4. **Configure environment variables**
+```powershell
+# Copy template to create .env file
+Copy-Item .env.template .env
+
+# Edit with your credentials
+notepad .env
+```
+
+**Required variables in `.env`:**
+```properties
+# API Configuration (Get key from: https://serpapi.com/)
+SERP_API_KEY=your_serpapi_key_here
+
+# Database Configuration
+DB_HOST=your_mysql_host
+DB_PORT=3306
+DB_NAME=your_database_name  
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
+```
+
 ### Graphical Interface (GUI)
 
 **Launch the JavaFX GUI** (Recommended for most users):
@@ -69,21 +117,33 @@ ScholarGuiApplication
 - **Articles:** ID, Title, Authors, Year, Journal, Citations
 - **Authors:** ID, Full Name, Articles Count, Total Citations, Average Citations, First Seen
 
-### Console Application
+### Console Applications (Alternative to GUI)
 
-**Test Automatic Database Saving:**
+**Option 1: Simple demo (recommended for testing)**
 ```powershell
-# Simple demo (recommended)
 mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.SimpleAutoSaveDemo
+```
 
-# Full database test with API integration
+**Option 2: Full database test with API integration**
+```powershell
 mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.DatabaseTestRunner
 ```
 
-### Prerequisites
-1. **Configure Database:** Create `.env` file with your MySQL settings
-2. **Install Dependencies:** Run `mvn clean compile`
-3. **Database Setup:** The app will auto-create tables on first run
+**Option 3: Interactive console**
+```powershell
+mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.ScholarApiConsole
+```
+
+### Testing (Optional)
+
+**Run unit tests:**
+```powershell
+mvn test
+```
+
+### Database Setup
+- **Automatic:** The app will auto-create tables on first run
+- **Manual:** See [DATABASE_README.md](docs/DATABASE_README.md) for complete schema
 
 ### What It Does
 ✅ **Automatically saves** articles to database  
@@ -399,25 +459,36 @@ server-db-commands/
 ### Installation
 
 1. **Clone the repository**
-```bash
-git clone https://github.com/AlduinoCalderon/server-db-commands.git
+```powershell
+git clone https://github.com/AlduinoCalderon/server-db-commands
 cd server-db-commands
 ```
 
-2. **Set up environment variables**
-
-Copy the template and configure your credentials:
-```bash
-# Copy the template
-cp .env.template src/main/resources/.env
-
-# Then edit src/main/resources/.env with your actual values
+2. **Verify environment**
+```powershell
+mvn -v  # Should show Maven 3.6+ and Java 11+
 ```
 
-Required configuration in `.env`:
+3. **Compile the project**
+```powershell
+mvn clean compile -DskipTests
+```
+
+4. **Set up environment variables**
+
+Copy the template and configure your credentials:
+```powershell
+# Copy the template to project root
+Copy-Item .env.template .env
+
+# Edit with your actual values
+notepad .env
+```
+
+Required configuration in `.env` (note: SERP_API_KEY with underscore):
 ```properties
 # API Configuration (Get key from: https://serpapi.com/)
-SERPAPI_KEY=your_serpapi_key_here
+SERP_API_KEY=your_serpapi_key_here
 
 # Database Configuration
 DB_HOST=localhost               # Your MySQL host
@@ -429,32 +500,27 @@ DB_PASSWORD=your_database_password  # Database password
 
 **Note:** The `.env` file is gitignored for security. Never commit credentials!
 
-3. **Build the project**
-```bash
-mvn clean install
-```
-
-4. **Run database setup** (first time only)
+5. **Run database setup** (first time only)
 
 The application will automatically create tables on first run. Or manually:
 ```sql
 -- See docs/DATABASE_README.md for complete schema
 ```
 
-5. **Launch the application**
+6. **Launch the application**
 
 **GUI Version (Recommended):**
-```bash
+```powershell
 mvn javafx:run
 ```
 
 **Console Version:**
-```bash
+```powershell
 mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.ScholarApiConsole
 ```
 
 **Quick Demo:**
-```bash
+```powershell
 mvn exec:java -Dexec.mainClass=com.innovationcenter.scholarapi.SimpleAutoSaveDemo
 ```
 
@@ -497,7 +563,7 @@ Edit `src/main/resources/styles/application.css` to customize:
 ## 🐛 Troubleshooting
 
 ### GUI doesn't start
-```bash
+```powershell
 # Ensure JavaFX is available
 mvn clean compile
 mvn javafx:run
@@ -507,19 +573,19 @@ java -version  # Should be 11+
 ```
 
 ### Database connection error
-- Verify `.env` file exists in `src/main/resources/`
-- Check database credentials
+- Verify `.env` file exists in project root (next to `pom.xml`)
+- Check database credentials in `.env`
 - Ensure MySQL server is running
 - Test connection: `mysql -h <host> -u <user> -p`
 
 ### No search results
-- Verify SERPAPI_KEY in `.env`
+- Verify `SERP_API_KEY` in `.env` (note the underscore)
 - Check internet connection
 - Try different search terms
-- Check API quota/limits
+- Check API quota/limits at https://serpapi.com/
 
 ### Build errors
-```bash
+```powershell
 # Clean and rebuild
 mvn clean
 mvn compile
@@ -527,6 +593,11 @@ mvn compile
 # Update dependencies
 mvn clean install -U
 ```
+
+### Windows-specific issues
+- If JavaFX fails to load, ensure you're using JDK 11+ (not JRE)
+- For "module not found" errors, try: `mvn clean compile -DskipTests`
+- If PowerShell commands fail, ensure execution policy allows scripts
 
 ## 📁 Project Structure
 
