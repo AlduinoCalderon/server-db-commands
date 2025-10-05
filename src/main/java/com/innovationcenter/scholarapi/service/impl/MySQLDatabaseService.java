@@ -65,9 +65,17 @@ public class MySQLDatabaseService implements DatabaseService {
         config.setPassword(password);
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         
-        // Connection pool settings
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(2);
+        // Connection pool settings - read from config, default to small pools so
+        // running GUI + API in separate JVMs doesn't exceed DB max connections.
+        int poolMax = 2;
+        try {
+            String poolMaxStr = configService.getProperty("DB_POOL_MAX");
+            if (poolMaxStr != null) poolMax = Integer.parseInt(poolMaxStr);
+        } catch (Exception ignored) {}
+
+        config.setMaximumPoolSize(poolMax);
+        // keep a small minimum idle
+        config.setMinimumIdle(Math.max(1, Math.min(poolMax, 1)));
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(600000);
         config.setMaxLifetime(1800000);

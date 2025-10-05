@@ -239,6 +239,15 @@ public class ArticleService {
     public long getTotalArticleCount() throws SQLException {
         return articleRepository.count();
     }
+
+    /**
+     * Find article by id (convenience wrapper).
+     */
+    public Article findById(Long id) throws SQLException {
+        if (id == null) return null;
+        java.util.Optional<Article> opt = articleRepository.findById(id);
+        return opt.orElse(null);
+    }
     
     /**
      * Updates an existing article.
